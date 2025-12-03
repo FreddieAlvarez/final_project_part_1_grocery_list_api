@@ -1,7 +1,7 @@
 const sequelize = require('./config');
-const User = require('./user');
-const List = require('./list');
-const Item = require('./item');
+const User = require('./users');
+const List = require('./lists');
+const Item = require('./items');
 
 async function setupDatabase() {
   try {
