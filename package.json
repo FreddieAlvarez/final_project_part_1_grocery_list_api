@@ -19,13 +19,19 @@
   },
   "homepage": "https://github.com/FreddieAlvarez/final_project_part_1_grocery_list_api#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "jsonwebtoken": "^9.0.2",
     "sequelize": "^6.37.7",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {
     "jest": "^30.2.0",
+    "nodemon": "^3.1.11",
     "supertest": "^7.1.4"
+  },
+  "directories": {
+    "test": "tests"
   }
 }
