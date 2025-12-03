@@ -4,6 +4,10 @@ require('dotenv').config();
 const app = express();
 app.use(express.json());
 
+//logger middleware
+const logger = require('./middleware/logger');
+app.use(logger);
+
 // Import routes
 const userRoutes = require('./routes/users');
 const listRoutes = require('./routes/lists');
@@ -18,6 +22,10 @@ app.use('/items', itemRoutes);
 app.get('/', (req, res) => {
   res.json({ message: "Grocery List API is running" });
 });
+
+//errorhandler
+const errorHandler = require('./middleware/errorHandler');
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 3000;
