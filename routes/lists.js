@@ -24,36 +24,40 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create list
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
   try {
-    const list = await List.create(req.body);
-    res.status(201).json(list);
+    const { name } = req.body;
+    if (!name) {
+      return res.status(400).json({ error: { message: 'Name is required' } });
+    }
+    const newList = await List.create({ name });
+    res.status(201).json(newList);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err); // pass error error handler
   }
 });
 
 // Update list
-router.put('/:id', async (req, res) => {
+router.put('/:id', async (req, res, next) => {
   try {
     const list = await List.findByPk(req.params.id);
     if (!list) return res.status(404).json({ error: 'List not found' });
     await list.update(req.body);
     res.json(list);
   } catch (err) {
-    res.status(400).json({ error: err.message });
+    next(err); // pass to error handler
   }
 });
 
 // Delete list
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', async (req, res, next) => {
   try {
     const list = await List.findByPk(req.params.id);
     if (!list) return res.status(404).json({ error: 'List not found' });
     await list.destroy();
     res.json({ message: 'List deleted' });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    next(err); // pass to error handler
   }
 });
 
