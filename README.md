@@ -1,8 +1,25 @@
 # Grocery List API
 
-This API allows users to manage grocery lists and items. Users can create accounts, create lists, add items to lists, update them, and delete them. Built with Node.js, Express, Sequelize, and SQLite.
+This API allows users to manage grocery lists and items. Users can create accounts, create lists, add items to lists, update them, and delete them. It's built with Node.js, Express, Sequelize, and SQLite.
 
 ---
+
+# Project Structure
+```
+project/
+│── app.js
+│── server.js
+│── package.json
+│── .env
+│
+├── models/
+├── routes/
+├── controllers/
+│
+└── middleware/
+     ├── logger.js
+     └── errorHandler.js
+```
 
 ### Setup Instructions
 
@@ -40,7 +57,7 @@ npm start
 npm test
 ```
 
-API Endpoints
+# API Endpoints
 
 Users
 
@@ -52,6 +69,22 @@ Create a new user.
 - `password` (string)  
 - `role` (string)  
 
+**Example Request:**
+```json
+{
+  "email": "test@example.com",
+  "password": "password123",
+  "role": "user"
+}
+```
+**Example Response**
+```json
+{
+  "id": 1,
+  "email": "test@example.com",
+  "role": "user"
+}
+```
 **Response:**  
 - `201 Created` with the created user object  
 
@@ -83,6 +116,21 @@ Create a new list.
 - `name` (string)  
 - `userId` (integer)  
 
+**Example Request**
+```json
+{
+  "name": "Weekly Groceries",
+  "userId": 1
+}
+```
+**Example Response**
+```json
+{
+  "id": 1,
+  "name": "Weekly Groceries",
+  "userId": 1
+}
+```
 **Response:**  
 - `201 Created` with the created list object  
 
@@ -115,6 +163,23 @@ Create a new item.
 - `purchased` (boolean)  
 - `listId` (integer)  
 
+**Example Request**
+```json
+{
+  "name": "Milk",
+  "purchased": false,
+  "listId": 1
+}
+```
+**Example Response**
+```json
+{
+  "id": 1,
+  "name": "Milk",
+  "purchased": false,
+  "listId": 1
+}
+```
 **Response:**  
 - `201 Created` with the created item object  
 

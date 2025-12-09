@@ -1,11 +1,19 @@
-// middleware/errorHandler.js
 const errorHandler = (err, req, res, next) => {
-  console.error(err.stack); // Log the error stack to console
-  res.status(err.status || 500).json({
-    error: {
-      message: err.message || 'Internal Server Error'
-    }
-  });
+  const statusCode = err.statusCode || 500;
+  const message = err.message || 'Internal Server Error';
+
+  const errorResponse = {
+    status: 'error',
+    statusCode,
+    message,
+    timestamp: new Date().toISOString()
+  };
+
+  if (process.env.NODE_ENV === 'development') {
+    errorResponse.stack = err.stack;
+  }
+
+  res.status(statusCode).json(errorResponse);
 };
 
 module.exports = errorHandler;
