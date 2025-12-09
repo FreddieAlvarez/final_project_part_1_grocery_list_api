@@ -2,8 +2,12 @@ const express = require('express');
 const router = express.Router();
 const User = require('../database/users');
 
+//imports for authorization
+const verifyToken = require('../middleware/verifyToken');
+const authRole = require('../middleware/authRole');
+
 // Get all users
-router.get('/', async (req, res, next) => {
+router.get('/', verifyToken, async (req, res, next) => {
   try {
     const users = await User.findAll();
     res.json(users);
@@ -13,7 +17,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // Get user by ID
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', verifyToken, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -23,8 +27,8 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// Create new user
-router.post('/', async (req, res, next) => {
+// Create new user (admin)
+router.post('/', verifyToken, authRole(['admin']), async (req, res, next) => {
   try {
     const { email, password, role } = req.body;
     if (!email || !password) {
@@ -38,7 +42,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // Update user
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', verifyToken, authRole(['admin']), async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });
@@ -50,7 +54,7 @@ router.put('/:id', async (req, res, next) => {
 });
 
 // Delete user
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', verifyToken, authRole(['admin']), async (req, res, next) => {
   try {
     const user = await User.findByPk(req.params.id);
     if (!user) return res.status(404).json({ error: 'User not found' });

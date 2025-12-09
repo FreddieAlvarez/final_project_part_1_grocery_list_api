@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const List = require('../database/lists');
 
+// Imports for auth
+const verifyToken = require('../middleware/verifyToken');
+
 // Get all lists
 router.get('/', async (req, res) => {
   try {
@@ -24,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create list
-router.post('/', async (req, res, next) => {
+router.post('/', verifyToken, async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name) {
@@ -38,7 +41,7 @@ router.post('/', async (req, res, next) => {
 });
 
 // Update list
-router.put('/:id', async (req, res, next) => {
+router.put('/:id', verifyToken, async (req, res, next) => {
   try {
     const list = await List.findByPk(req.params.id);
     if (!list) return res.status(404).json({ error: 'List not found' });
@@ -50,7 +53,7 @@ router.put('/:id', async (req, res, next) => {
 });
 
 // Delete list
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', verifyToken, async (req, res, next) => {
   try {
     const list = await List.findByPk(req.params.id);
     if (!list) return res.status(404).json({ error: 'List not found' });
