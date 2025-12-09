@@ -20,7 +20,8 @@ const register = async (req, res) => {
       role: user.role
     });
   } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Registration error:', error); // <-- log error
+    res.status(500).json({ error: 'Registration failed', details: error.message });
   }
 };
 
@@ -49,7 +50,8 @@ const login = async (req, res) => {
 
     res.json({ token });
   } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
+    console.error('Login error:', error); // <-- log error correctly
+    res.status(500).json({ error: 'Login failed', details: error.message });
   }
 };
 
