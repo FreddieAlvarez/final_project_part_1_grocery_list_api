@@ -4,6 +4,7 @@ const List = require('../database/lists');
 
 // Imports for auth
 const verifyToken = require('../middleware/verifyToken');
+const checkListOwner = require('../middleware/checkListOwner');
 
 // Get all lists
 router.get('/', async (req, res) => {
@@ -33,7 +34,7 @@ router.post('/', verifyToken, async (req, res, next) => {
     if (!name) {
       return res.status(400).json({ error: { message: 'Name is required' } });
     }
-    const newList = await List.create({ name });
+    const newList = await List.create({ name, userId: req.user.id});
     res.status(201).json(newList);
   } catch (err) {
     next(err); // pass error error handler
@@ -41,23 +42,19 @@ router.post('/', verifyToken, async (req, res, next) => {
 });
 
 // Update list
-router.put('/:id', verifyToken, async (req, res, next) => {
+router.put('/:id', verifyToken, checkListOwner, async (req, res, next) => {
   try {
-    const list = await List.findByPk(req.params.id);
-    if (!list) return res.status(404).json({ error: 'List not found' });
-    await list.update(req.body);
-    res.json(list);
+    await req.list.update(req.body);
+    res.json(req.list);
   } catch (err) {
     next(err); // pass to error handler
   }
 });
 
 // Delete list
-router.delete('/:id', verifyToken, async (req, res, next) => {
+router.delete('/:id', verifyToken, checkListOwner, async (req, res, next) => {
   try {
-    const list = await List.findByPk(req.params.id);
-    if (!list) return res.status(404).json({ error: 'List not found' });
-    await list.destroy();
+    await req.list.destroy();
     res.json({ message: 'List deleted' });
   } catch (err) {
     next(err); // pass to error handler

@@ -4,6 +4,7 @@ const Item = require('../database/items');
 
 //Imports for auth
 const verifyToken = require('../middleware/verifyToken');
+const checkItemOwner = require('../middleware/checkItemOwner');
 
 // Get all items
 router.get('/', async (req, res, next) => {
@@ -31,7 +32,11 @@ router.post('/', verifyToken, async (req, res, next) => {
   try {
     const { name, purchased, listId } = req.body;
     if (!name) return res.status(400).json({ error: { message: 'Name is required' } });
-    const newItem = await Item.create({ name, purchased: purchased || false, listId });
+
+    const newItem = await Item.create({ 
+      name, 
+      purchased: purchased || false, listId });
+
     res.status(201).json(newItem);
   } catch (err) {
     next(err);
@@ -39,23 +44,19 @@ router.post('/', verifyToken, async (req, res, next) => {
 });
 
 // Update item
-router.put('/:id', verifyToken, async (req, res, next) => {
+router.put('/:id', verifyToken, checkItemOwner, async (req, res, next) => {
   try {
-    const item = await Item.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Item not found' });
-    await item.update(req.body);
-    res.json(item);
+    await req.item.update(req.body);
+    res.json(req.item);
   } catch (err) {
     next(err);
   }
 });
 
 // Delete item
-router.delete('/:id', verifyToken, async (req, res, next) => {
+router.delete('/:id', verifyToken, checkItemOwner, async (req, res, next) => {
   try {
-    const item = await Item.findByPk(req.params.id);
-    if (!item) return res.status(404).json({ error: 'Item not found' });
-    await item.destroy();
+    await req.item.destroy();
     res.json({ message: 'Item deleted' });
   } catch (err) {
     next(err);
