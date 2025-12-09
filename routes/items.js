@@ -12,12 +12,36 @@ const roleMiddleware = require('../middleware/role');
 // Get all items
 router.get('/', verifyToken, async (req, res, next) => {
   try {
-    const items = await Item.findAll();
+    const filter = {};
+
+    // Name search filter
+    if (req.query.name) {
+      const { Op } = require('sequelize'); // make sure Sequelize Op is imported
+      filter.name = { [Op.like]: `%${req.query.name}%` };
+    }
+
+    //purchase status filter
+    if (req.query.purchased !== undefined) {
+      filter.purchased = req.query.purchased === 'true';
+    }
+
+    //pagination
+    const page = parseInt(req.query.page) || 1; 
+    const limit = parseInt(req.query.limit) || 10; 
+    const offset = (page - 1) * limit;
+
+    const items = await Item.findAll({
+      where: filter,  //  filter
+      limit,          //  limit results
+      offset,         //  skip first 15
+    });
+
     res.json(items);
   } catch (err) {
     next(err);
   }
 });
+
 
 // Get item by ID
 router.get('/:id', verifyToken, async (req, res, next) => {
