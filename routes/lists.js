@@ -6,8 +6,11 @@ const List = require('../database/lists');
 const verifyToken = require('../middleware/verifyToken');
 const checkListOwner = require('../middleware/checkListOwner');
 
+// Role middleware  
+const roleMiddleware = require('../middleware/role');
+
 // Get all lists
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res, next) => {
   try {
     const lists = await List.findAll();
     res.json(lists);
@@ -17,7 +20,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get list by ID
-router.get('/:id', async (req, res) => {
+router.get('/:id', verifyToken, async (req, res, next) => {
   try {
     const list = await List.findByPk(req.params.id);
     if (!list) return res.status(404).json({ error: 'List not found' });
@@ -27,8 +30,8 @@ router.get('/:id', async (req, res) => {
   }
 });
 
-// Create list
-router.post('/', verifyToken, async (req, res, next) => {
+// Create list (admin)
+router.post('/', verifyToken, roleMiddleware('admin'), async (req, res, next) => {
   try {
     const { name } = req.body;
     if (!name) {
@@ -41,8 +44,8 @@ router.post('/', verifyToken, async (req, res, next) => {
   }
 });
 
-// Update list
-router.put('/:id', verifyToken, checkListOwner, async (req, res, next) => {
+// Update list (admin, owner)
+router.put('/:id', verifyToken, roleMiddleware('admin'), checkListOwner, async (req, res, next) => {
   try {
     await req.list.update(req.body);
     res.json(req.list);
@@ -51,8 +54,8 @@ router.put('/:id', verifyToken, checkListOwner, async (req, res, next) => {
   }
 });
 
-// Delete list
-router.delete('/:id', verifyToken, checkListOwner, async (req, res, next) => {
+// Delete list (admin, owner)
+router.delete('/:id', verifyToken, roleMiddleware('admin'), checkListOwner, async (req, res, next) => {
   try {
     await req.list.destroy();
     res.json({ message: 'List deleted' });

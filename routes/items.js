@@ -6,8 +6,11 @@ const Item = require('../database/items');
 const verifyToken = require('../middleware/verifyToken');
 const checkItemOwner = require('../middleware/checkItemOwner');
 
+// Role middleware  
+const roleMiddleware = require('../middleware/role');
+
 // Get all items
-router.get('/', async (req, res, next) => {
+router.get('/', verifyToken, async (req, res, next) => {
   try {
     const items = await Item.findAll();
     res.json(items);
@@ -17,7 +20,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // Get item by ID
-router.get('/:id', async (req, res, next) => {
+router.get('/:id', verifyToken, async (req, res, next) => {
   try {
     const item = await Item.findByPk(req.params.id);
     if (!item) return res.status(404).json({ error: 'Item not found' });
@@ -27,7 +30,7 @@ router.get('/:id', async (req, res, next) => {
   }
 });
 
-// Create item
+// Create item (if logged in user)
 router.post('/', verifyToken, async (req, res, next) => {
   try {
     const { name, purchased, listId } = req.body;
@@ -43,8 +46,8 @@ router.post('/', verifyToken, async (req, res, next) => {
   }
 });
 
-// Update item
-router.put('/:id', verifyToken, checkItemOwner, async (req, res, next) => {
+// Update item (owner/admin)
+router.put('/:id', verifyToken, roleMiddleware('admin'), checkItemOwner, async (req, res, next) => {
   try {
     await req.item.update(req.body);
     res.json(req.item);
@@ -53,8 +56,8 @@ router.put('/:id', verifyToken, checkItemOwner, async (req, res, next) => {
   }
 });
 
-// Delete item
-router.delete('/:id', verifyToken, checkItemOwner, async (req, res, next) => {
+// Delete item (owner/admin)
+router.delete('/:id', verifyToken, roleMiddleware('admin'), checkItemOwner, async (req, res, next) => {
   try {
     await req.item.destroy();
     res.json({ message: 'Item deleted' });
