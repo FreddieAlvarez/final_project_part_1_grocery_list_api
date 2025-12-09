@@ -12,11 +12,13 @@ app.use(logger);
 const userRoutes = require('./routes/users');
 const listRoutes = require('./routes/lists');
 const itemRoutes = require('./routes/items');
+const authRoutes = require('./routes/auth');
 
 // Use routes
 app.use('/users', userRoutes);
 app.use('/lists', listRoutes);
 app.use('/items', itemRoutes);
+app.use('/auth', authRoutes);
 
 // Test route
 app.get('/', (req, res) => {
