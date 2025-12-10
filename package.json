@@ -35,5 +35,8 @@
   },
   "directories": {
     "test": "tests"
+  },
+  "jest":{
+    "testEnvironment": "node"
   }
 }
