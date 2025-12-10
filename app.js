@@ -22,7 +22,7 @@ app.use('/auth', authRoutes);
 
 // Test route
 app.get('/', (req, res) => {
-  res.json({ message: "Grocery List API is running" });
+  res.send('Grocery List API is running!');
 });
 
 // Error handler
