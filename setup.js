@@ -1,4 +1,4 @@
-const sequelize = require('./config');
+const {sequelize} = require('./config');
 const User = require('./users');
 const List = require('./lists');
 const Item = require('./items');
@@ -9,9 +9,7 @@ async function setupDatabase() {
     console.log('Database setup complete!');
   } catch (err) {
     console.error('Error setting up database:', err);
-  } finally {
-    await sequelize.close();
   }
 }
 
-setupDatabase();
+module.exports = setupDatabase;

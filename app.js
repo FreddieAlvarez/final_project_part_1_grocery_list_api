@@ -20,7 +20,6 @@ app.use('/lists', listRoutes);
 app.use('/items', itemRoutes);
 app.use('/auth', authRoutes);
 
-
 // Test route
 app.get('/', (req, res) => {
   res.json({ message: "Grocery List API is running" });
@@ -29,4 +28,4 @@ app.get('/', (req, res) => {
 // Error handler
 app.use(errorHandler);
 
-module.exports = app; 
+module.exports = app;

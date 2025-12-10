@@ -1,13 +1,20 @@
 const request = require('supertest');
 const app = require('../app');
-const sequelize = require('../database/config');
 const User = require('../database/users');
 
+const setupDatabase = require('../setup');
+
 beforeAll(async () => {
-  await sequelize.sync({ force: true });
+  await setupDatabase();
+});
+
+beforeEach(async () => { 
+  await User.destroy({ where: {} }); 
+  await User.create({ email: 'default@example.com', password: 'password123', role: 'user' }); 
 });
 
 afterAll(async () => {
+  const { sequelize } = require('../database/config');
   await sequelize.close();
 });
 

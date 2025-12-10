@@ -1,9 +1,19 @@
 const request = require('supertest');
-const app = require('./app'); // import your Express app
+const app = require('../app'); 
+const setupDatabase = require('../setup'); 
+
+beforeAll(async () => {
+  await setupDatabase(); 
+});
+
+beforeEach(async () => {
+  const { User } = require('../database/users');
+  await User.destroy({ where: {} });
+});
 
 describe('Authentication Endpoints', () => {
 
-  // ======= Registration Tests =======
+  // Registration Tests
   describe('POST /auth/register', () => {
     it('should register a new user', async () => {
       const res = await request(app)
@@ -33,7 +43,7 @@ describe('Authentication Endpoints', () => {
     });
   });
 
-  // ======= Login Tests =======
+  // Login Tests 
   describe('POST /auth/login', () => {
     it('should login an existing user and return a token', async () => {
       const res = await request(app)
@@ -45,6 +55,8 @@ describe('Authentication Endpoints', () => {
 
       expect(res.statusCode).toBe(200);
       expect(res.body).toHaveProperty('token');
+
+      token = res.body.token;
     });
 
     it('should fail login with wrong password', async () => {
@@ -60,4 +72,18 @@ describe('Authentication Endpoints', () => {
     });
   });
 
+  //protected rout tests
+  describe('Protected routes', () => {
+    it('should deny access without token', async () => {
+      const res = await request(app).get('/lists');
+      expect(res.statusCode).toBe(401);
+    });
+
+    it('should allow access with token', async () => {
+      const res = await request(app)
+        .get('/lists')
+        .set('Authorization', `Bearer ${token}`);
+      expect(res.statusCode).toBe(200);
+    });
+  });
 });

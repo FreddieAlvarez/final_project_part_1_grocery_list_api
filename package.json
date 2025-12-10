@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node server.js",
     "test": "jest",
     "setup": "node database/setup.js",
     "seed": "node database/seed.js"
@@ -36,7 +37,7 @@
   "directories": {
     "test": "tests"
   },
-  "jest":{
+  "jest": {
     "testEnvironment": "node"
   }
 }
