@@ -11,14 +11,35 @@ project/
 │── server.js
 │── package.json
 │── .env
+│── setup.js
 │
-├── models/
+├── database/
+    ├── config.js
+    ├── items.js
+    ├── lists.js
+    └── seed.js
+    └── users.js
 ├── routes/
+    ├── auth.js
+    ├── items.js
+    ├── lists.js
+    └── users.js
+├── tests/
+    ├── app.test.js
+    ├── auth.test.js
+    ├── items.test.js
+    ├── lists.test.js
+    └── users.test.js
 ├── controllers/
-│
+│    └──auth.js
 └── middleware/
-     ├── logger.js
+     ├── authRole.js
+     ├── checkItemOwner.js
+     ├── checkListOwner.js
      └── errorHandler.js
+     ├── logger.js
+     ├── role.js
+     └── verifyToken.js
 ```
 
 ### Setup Instructions
@@ -98,6 +119,58 @@ Retrieve all users.
 
 ---
 
+# Authentication
+
+**POST/auth/register**
+
+Register a new user account.
+
+**Body parameters:**  
+- `email` (string)  
+- `password` (string)  
+- `role` (string) - user or admin
+
+**Example Request:**
+```json
+{
+  "email": "testuser@example.com",
+  "password": "password123",
+  "role": "user"
+}
+```
+
+**Example Response**
+```json
+{
+  "id": 2,
+  "email": "testuser@example.com",
+  "role": "user"
+}
+```
+
+**POST /auth/login**
+
+Authenticate a user and receive a JWT token.
+
+**Body parameters:**  
+- `email` (string)  
+- `password` (string)  
+
+**Example Request:**
+```json
+{
+  "email": "testuser@example.com",
+  "password": "password123"
+}
+```
+
+**Example Response**
+```json
+{
+  "token": "<jwt-token>"
+}
+```
+
 **GET /users/:id**  
 Retrieve a user by ID.  
 
@@ -134,13 +207,19 @@ Create a new list.
 **Response:**  
 - `201 Created` with the created list object  
 
+Authorization: Bearer <jwt-token>
+
+Admin role required for some actions like create, update, and delete
+
 ---
 
 **GET /lists**  
 Retrieve all lists.  
 
 **Response:**  
-- `200 OK` with an array of list objects  
+- `200 OK` with an array of list objects 
+
+Protected route – requires JWT token
 
 ---
 
@@ -150,6 +229,8 @@ Retrieve a list by ID.
 **Response:**  
 - `200 OK` with the list object  
 - `404 Not Found` if the list does not exist  
+
+Protected route – requires JWT token
 
 ---
 
@@ -183,6 +264,8 @@ Create a new item.
 **Response:**  
 - `201 Created` with the created item object  
 
+Protected route – requires JWT token
+
 ---
 
 **GET /items**  
@@ -190,6 +273,8 @@ Retrieve all items.
 
 **Response:**  
 - `200 OK` with an array of item objects  
+
+Protected route – requires JWT token
 
 ---
 
@@ -199,6 +284,8 @@ Retrieve an item by ID.
 **Response:**  
 - `200 OK` with the item object  
 - `404 Not Found` if the item does not exist  
+
+Protected route – requires JWT token
 
 ---
 
@@ -213,6 +300,9 @@ Update an item.
 **Response:**  
 - `200 OK` with the updated item object  
 
+Protected route – requires JWT token
+Only owners and admins can update
+
 ---
 
 **DELETE /items/:id**  
@@ -221,3 +311,6 @@ Delete an item.
 **Response:**  
 - `200 OK` if deleted successfully  
 - `404 Not Found` if the item does not exist  
+
+Protected route – requires JWT token
+Only owners and admins can update
